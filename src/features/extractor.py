@@ -139,11 +139,11 @@ class FeatureExtractor():
             logger.info(f'The PCA feature name out:\n{pca_feature_names}')
             
             # Prepare the components relations with features
-            relation_df = pd.DataFrame(self.pca.components_, columns=self.input_features, index = pca_feature_names)
+            raw_relation_df = pd.DataFrame(self.pca.components_, columns=self.input_features, index = pca_feature_names)
             # Take the absolute values as the sign does not matter
-            relation_df.abs()
+            raw_relation_df = raw_relation_df.abs()
             # Get the most relation to the PCA features
-            relation_df = relation_df.idxmax(axis=1)
+            relation_df = raw_relation_df.idxmax(axis=1)
             logger.info(f'The PCA components (absolute, maximum) relations with features:\n{relation_df}')
             
             feature_map = {f'pca{idx}' : relation_df.loc[f'pca{idx}'] for idx in range(len(pca_feature_names))}
@@ -154,7 +154,7 @@ class FeatureExtractor():
         logger.info(f'The main features contributed to PCA components:\n{main_features}')
         logger.info(f'The variance explained per PCA component:\n{self.pca.explained_variance_ratio_}')
         
-        return main_features, self.pca.explained_variance_ratio_
+        return main_features, self.pca.explained_variance_ratio_, raw_relation_df
     
     def __transform(self, data_df, is_log=False):
         # Initialize the two dimensional numpy array to be used
