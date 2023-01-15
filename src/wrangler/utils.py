@@ -112,3 +112,10 @@ def clean_up_variable_names(name, src_values):
         name = _replace_variable_names_val(name, src_value)
 
     return name
+
+FIX_NAME_MAPPING = {'_' : '_JQUERY_NO_CHACHE_'}
+
+def fix_variable_names(names):
+    return [FIX_NAME_MAPPING[name] if name in FIX_NAME_MAPPING else name for name in names]
+        
+            
