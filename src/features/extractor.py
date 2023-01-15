@@ -52,7 +52,7 @@ class FeatureExtractor():
     IGNORE_COLS_DEFAULTS = ['EVENT_ID']
 
     def __init__(self, ignore_columns=IGNORE_COLS_DEFAULTS, is_scale=True, pca_args=PCA_ARGS_DEFAULTS,
-                 cu_max_features = 10, # Here we simply took some number to accomodate at least part of the user agent string
+                 cu_max_features = 5, # Here we simply took some number to accomodate at least part of the user agent string
                  mvss_max_features = 5, # There is always at most two SRC values in the data
                  mvn_max_features=15, # Within the data at most 11 variable names were found
                  mvv_max_features=40): # Within the data at most 36 values were found
@@ -129,22 +129,32 @@ class FeatureExtractor():
             # Fit the PCA if needed
             if self.pca is not None:
                 logger.info(f'Start fitting the PCA')
-                self.pca.fit(X)
+                self.pca.fit(pd.DataFrame(X, columns = self.input_features, dtype = float))
         
         logger.info(f'Fitting the Feature Extractor model is done!')
 
     def get_feature_names_out(self):
         if self.pca:
-            rem_pca_features = self.pca.get_feature_names_out(self.input_features)
-            feature_map = {f'pca{idx}' : self.input_features[idx] for idx in range(len(self.input_features))}
-            rem_features = [feature_map[pca_name] for pca_name in rem_pca_features]
+            pca_feature_names = self.pca.get_feature_names_out(self.input_features)
+            logger.info(f'The PCA feature name out:\n{pca_feature_names}')
+            
+            # Prepare the components relations with features
+            relation_df = pd.DataFrame(self.pca.components_, columns=self.input_features, index = pca_feature_names)
+            # Take the absolute values as the sign does not matter
+            relation_df.abs()
+            # Get the most relation to the PCA features
+            relation_df = relation_df.idxmax(axis=1)
+            logger.info(f'The PCA components (absolute, maximum) relations with features:\n{relation_df}')
+            
+            feature_map = {f'pca{idx}' : relation_df.loc[f'pca{idx}'] for idx in range(len(pca_feature_names))}
+            main_features = [feature_map[pca_name] for pca_name in pca_feature_names]
         else:
-            rem_features = self.input_features
+            main_features = self.input_features
 
-        logger.info(f'The feature names remaining after PCA:\n{rem_features}')
-        logger.info(f'The variance explained:\n{self.pca.explained_variance_ratio_}')
+        logger.info(f'The main features contributed to PCA components:\n{main_features}')
+        logger.info(f'The variance explained per PCA component:\n{self.pca.explained_variance_ratio_}')
         
-        return rem_features
+        return main_features, self.pca.explained_variance_ratio_
     
     def __transform(self, data_df, is_log=False):
         # Initialize the two dimensional numpy array to be used
@@ -172,7 +182,7 @@ class FeatureExtractor():
         # Do the PCA if required
         if self.pca is not None:
             logger.info(f'Starting the PCA transform, the initial X shape: {X.shape}')
-            X = self.pca.transform(X)
+            X = self.pca.transform(pd.DataFrame(X, columns = self.input_features, dtype = float))
             logger.info(f'The X shape after the PCA transform: {X.shape}')
        
         logger.info(f'Transforming with the Feature Extractor model is done!')
