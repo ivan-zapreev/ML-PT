@@ -23,12 +23,14 @@ def is_bad_user_agent(user_agent):
 def is_good_user_agent(user_agent):
     return bool(USER_AGENT_REG_EXP.match(user_agent))
 
+DATA_DELIMITER = r"\';\'"
+
 get_first_val = lambda lst: lst[0]
 get_second_val = lambda lst: lst[1] if len(lst) > 1 else ''
-split_src_values = lambda val: val.split(r'\';\'')
-get_first_src_val = lambda val: get_first_val(split_src_values(val))
-get_second_src_val = lambda val: get_second_val(split_src_values(val))
+split_data_values = lambda val: val.split(DATA_DELIMITER)
 
+# NOTE: It would be good to have a complete list or a dynamic collection
+#       For now this is fine but for production is to be more robust
 LEARNED_SRC_VALUES = ['REQUEST_URI', 'REQUEST_GET_ARGS', 'REQUEST_PATH', \
                       'REQUEST_HEADERS', 'REQUEST_METHOD', 'REQUEST_COOKIES', \
                       'REQUEST_ARGS_KEYS', 'RESPONSE_HEADERS', 'REQUEST_POST_ARGS', \
@@ -105,7 +107,8 @@ def _replace_variable_names_val(val, match):
         val = val.replace(match, '')
     return val
 
-def clean_up_variable_names(name, src, src_sec):
-    name = _replace_variable_names_val(name, src)
-    name = _replace_variable_names_val(name, src_sec)
+def clean_up_variable_names(name, src_values):
+    for src_value in src_values:
+        name = _replace_variable_names_val(name, src_value)
+
     return name

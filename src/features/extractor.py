@@ -12,7 +12,6 @@ class FeatureExtractor():
     # Define various column data fitters
     __cu_feature_fitter = lambda self, col_data: self.cu_tfidf.fit(col_data)
     __mvs_feature_fitter = lambda self, col_data: self.mvss_tfidf.fit(col_data)
-    __mvss_feature_fitter = lambda self, col_data: self.mvss_tfidf.fit(col_data)
     __mvn_feature_fitter = lambda self, col_data: self.mvn_tfidf.fit(col_data)
     __mvv_feature_fitter = lambda self, col_data: self.mvv_tfidf.fit(col_data)
 
@@ -20,7 +19,6 @@ class FeatureExtractor():
     FEATURE_FIT_MAPPING = {
                               'CLIENT_USERAGENT' : __cu_feature_fitter,
                               'MATCHED_VARIABLE_SRC' : __mvs_feature_fitter,
-                              'MATCHED_VARIABLE_SRC_SEC' : __mvss_feature_fitter,
                               'MATCHED_VARIABLE_NAME' : __mvn_feature_fitter,
                               'MATCHED_VARIABLE_VALUE' : __mvv_feature_fitter
                            }
@@ -31,7 +29,7 @@ class FeatureExtractor():
     __rc_feature_transformer = lambda self, col_data: np.reshape(col_data.values, (-1, 1))
     __cu_feature_transformer = lambda self, col_data: self.cu_tfidf.transform(col_data).toarray()
     __iuv_feature_transformer = lambda self, col_data: np.reshape(col_data.astype('int').values, (-1, 1))
-    __mvss_feature_transformer = lambda self, col_data: self.mvss_tfidf.transform(col_data).toarray()
+    __mvs_feature_transformer = lambda self, col_data: self.mvss_tfidf.transform(col_data).toarray()
     __mvn_feature_transformer = lambda self, col_data: self.mvn_tfidf.transform(col_data).toarray()
     __mvv_feature_transformer = lambda self, col_data: self.mvv_tfidf.transform(col_data).toarray()
     
@@ -42,8 +40,7 @@ class FeatureExtractor():
                                 'RESPONSE_CODE' : __rc_feature_transformer,
                                 'CLIENT_USERAGENT' : __cu_feature_transformer,
                                 'IS_USERAGENT_VALID' : __iuv_feature_transformer,
-                                'MATCHED_VARIABLE_SRC' : __mvss_feature_transformer,
-                                'MATCHED_VARIABLE_SRC_SEC' : __mvss_feature_transformer,
+                                'MATCHED_VARIABLE_SRC' : __mvs_feature_transformer,
                                 'MATCHED_VARIABLE_NAME' : __mvn_feature_transformer,
                                 'MATCHED_VARIABLE_VALUE' : __mvv_feature_transformer
                             }
@@ -56,7 +53,7 @@ class FeatureExtractor():
 
     def __init__(self, ignore_columns=IGNORE_COLS_DEFAULTS, is_scale=True, pca_args=PCA_ARGS_DEFAULTS,
                  cu_max_features = 10, # Here we simply took some number to accomodate at least part of the user agent string
-                 mvss_max_features = 1, # There is always at most one SRC and one secondary SRC token
+                 mvss_max_features = 5, # There is always at most two SRC values in the data
                  mvn_max_features=15, # Within the data at most 11 variable names were found
                  mvv_max_features=40): # Within the data at most 36 values were found
         # Remember the feature columns
