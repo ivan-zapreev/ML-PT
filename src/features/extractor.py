@@ -65,7 +65,7 @@ class FeatureExtractor():
         
         # Remember the normalization flag
         self.is_scale = is_scale
-        logger.info(f'Actual Normalization flag: {self.is_scale}')
+        logger.info(f'Actual Scaling flag: {self.is_scale}')
         
         # Put the argument values on top of the defaults
         if pca_args is None:
@@ -183,5 +183,14 @@ class FeatureExtractor():
         return X
     
     def fit_transform(self, data_df):
+        # Fit the model
         self.fit(data_df)
+        
+        # TODO: It is not optimal as both fit and transform will
+        #       use __transform in case of Scaling or PCA enabled.
+        #       One could optimize the logic to do __transform only
+        #       once for better performance. This is however not
+        #       critical for the amount of data at hand.
+        
+        # Transform the data
         return self.transform(data_df)
