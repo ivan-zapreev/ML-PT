@@ -79,7 +79,7 @@ class FeatureExtractor():
         self.mvn_tfidf = TfidfVectorizer(max_features=mvn_max_features)
         self.mvv_tfidf = TfidfVectorizer(max_features=mvv_max_features)
         self.scaler = StandardScaler() if self.is_scale else None
-        self.pca = PCA(**self.pca_args if self.pca_args is not None else None)
+        self.pca = PCA(**self.pca_args) if self.pca_args is not None else None
     
     def _register_new_features(self, name, data):
         number = data.shape[1]

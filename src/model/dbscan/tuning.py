@@ -38,14 +38,14 @@ def visualize_elbow_eps_value(distances, x_pos, y_pos, title):
 def compute_dbscan_clusters(X, eps_value, min_samples):
     # Apply DBSCAN for clustering of the provided data
     logger.debug(f'Start fitting DBSCAN model')
-    clustering = DBSCAN(eps=eps_value, min_samples=min_samples, n_jobs=-1).fit(X)
+    clusterer = DBSCAN(eps=eps_value, min_samples=min_samples, n_jobs=-1).fit(X)
     
     # List the labels to understand how many clusters we have
-    cluster_labels, cluster_sizes = np.unique(clustering.labels_, return_counts=True)
+    cluster_labels, cluster_sizes = np.unique(clusterer.labels_, return_counts=True)
     num_labels = len(cluster_labels)
     logger.debug(f'There are {num_labels} distinct DBSCAN cluster labels found')
     
-    return clustering, cluster_labels, cluster_sizes
+    return clusterer, cluster_labels, cluster_sizes
 
 def fit_dbscan_clusters(X, min_samples, s_value):
     # First, find the optimal number value for epsilon
@@ -53,7 +53,7 @@ def fit_dbscan_clusters(X, min_samples, s_value):
     eps_value = y_pos
     
     # Second, cluster the data and get the number of clusters
-    clustering, cluster_labels, cluster_sizes = compute_dbscan_clusters(X, eps_value, min_samples)
+    clusterer, cluster_labels, cluster_sizes = compute_dbscan_clusters(X, eps_value, min_samples)
     
     # Return all the relevant data
     return {
@@ -63,7 +63,7 @@ def fit_dbscan_clusters(X, min_samples, s_value):
                           'y_pos' : y_pos
                         },
              'eps_value' : eps_value,
-             'clustering' : clustering,
+             'clusterer' : clusterer,
              'cluster_labels' : cluster_labels,
              'cluster_sizes' : cluster_sizes
             }
