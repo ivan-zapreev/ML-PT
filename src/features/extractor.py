@@ -142,6 +142,9 @@ class FeatureExtractor():
             raw_relation_df = pd.DataFrame(self.pca.components_, columns=self.input_features, index = pca_feature_names)
             # Take the absolute values as the sign does not matter
             raw_relation_df = raw_relation_df.abs()
+            if len(raw_relation_df) <= 10:
+                logger.info(f'The complete PCA component feature contributions are:\n{raw_relation_df}')
+            
             # Get the most relation to the PCA features
             relation_df = raw_relation_df.idxmax(axis=1)
             logger.info(f'The PCA components (absolute, maximum) relations with features:\n{relation_df}')
