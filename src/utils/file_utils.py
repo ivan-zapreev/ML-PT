@@ -34,9 +34,3 @@ def load_numpy_zc(file_path, names):
     data = (loaded[name] for name in names)
     logger.info(f'File loading and data extraction are done!')
     return data
-
-def check_file_present(file_dir, data_type, data_struct, version):
-    file_path = os.path.join(file_dir, f'{data_type}_{data_struct}_v{version}.npz')
-    logger.info(f'Checking if the dataset v{version} "{data_struct}" {data_type} data is pre-computed: {file_path}')
-    is_not_present = not os.path.exists(file_path)
-    return file_path, is_not_present
