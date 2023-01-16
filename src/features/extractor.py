@@ -142,7 +142,7 @@ class FeatureExtractor():
             feature_conts_df = None
             explained_variance = None
         
-        logger.info(f'Feature to PCA conponent contributions:\n{feature_conts_df}')
+        logger.debug(f'Feature to PCA conponent contributions:\n{feature_conts_df}')
         logger.info(f'The main features contributed to PCA components:\n{main_features}')
         logger.info(f'The variance explained per PCA component:\n{explained_variance}')
         
@@ -158,7 +158,6 @@ class FeatureExtractor():
             X = self._extract_column_features(data_df, col_feat_ext, col_name, X, is_log=is_log)
         
         return X
-
     
     def transform(self, data_df):
         logger.info(f'Start transforming the data with the Feature Extraction model')
