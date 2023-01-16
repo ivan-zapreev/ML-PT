@@ -5,7 +5,16 @@ The test task for ML-PT With the task desacription available via the [link](http
 ...
 
 # How to run
-...
+Requires at least *Python 3.8.13*
+
+## Local
+
+1. ``ML-PT % pip install -r requirements.txt``
+
+## Docker
+
+## Re-generate requirements
+``ML-PT % pipreqs .``
 
 # Known problems and limitations
 ...
