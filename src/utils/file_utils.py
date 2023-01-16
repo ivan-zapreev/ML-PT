@@ -24,7 +24,7 @@ def decompress_pickle(folder, file_name):
     return data
 
 def store_numpy_zc(file_path, **kwds):
-    logger.info(f'Dumping compressed numpy z file into: {file_path}')
+    logger.info(f'Dumping compressed numpy z file into: {file_path}.npz')
     np.savez_compressed(file_path, **kwds)
     logger.info(f'File dumping is done!')
 
