@@ -6,6 +6,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 from src.utils.logger import logger
+from src.features.utils import get_pca_run_stats
 
 class FeatureExtractor():
    
@@ -135,29 +136,17 @@ class FeatureExtractor():
 
     def get_feature_names_out(self):
         if self.pca:
-            pca_feature_names = self.pca.get_feature_names_out(self.input_features)
-            logger.info(f'The PCA feature name out:\n{pca_feature_names}')
-            
-            # Prepare the components relations with features
-            raw_relation_df = pd.DataFrame(self.pca.components_, columns=self.input_features, index = pca_feature_names)
-            # Take the absolute values as the sign does not matter
-            raw_relation_df = raw_relation_df.abs()
-            if len(raw_relation_df) <= 10:
-                logger.info(f'The complete PCA component feature contributions are:\n{raw_relation_df}')
-            
-            # Get the most relation to the PCA features
-            relation_df = raw_relation_df.idxmax(axis=1)
-            logger.info(f'The PCA components (absolute, maximum) relations with features:\n{relation_df}')
-            
-            feature_map = {f'pca{idx}' : relation_df.loc[f'pca{idx}'] for idx in range(len(pca_feature_names))}
-            main_features = [feature_map[pca_name] for pca_name in pca_feature_names]
+            main_features, feature_conts_df, explained_variance = get_pca_run_stats(self.pca, self.input_features)
         else:
             main_features = self.input_features
-
-        logger.info(f'The main features contributed to PCA components:\n{main_features}')
-        logger.info(f'The variance explained per PCA component:\n{self.pca.explained_variance_ratio_}')
+            feature_conts_df = None
+            explained_variance = None
         
-        return main_features, self.pca.explained_variance_ratio_, raw_relation_df
+        logger.info(f'Feature to PCA conponent contributions:\n{feature_conts_df}')
+        logger.info(f'The main features contributed to PCA components:\n{main_features}')
+        logger.info(f'The variance explained per PCA component:\n{explained_variance}')
+        
+        return main_features, feature_conts_df, explained_variance
     
     def __transform(self, data_df, is_log=False):
         # Initialize the two dimensional numpy array to be used

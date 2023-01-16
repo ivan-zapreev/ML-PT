@@ -1,5 +1,4 @@
-import numpy as np
-import seaborn as sns
+import pandas as pd
 import matplotlib.pyplot as plt
 
 from sklearn.manifold import TSNE
@@ -16,30 +15,32 @@ def plot_2d_feature_space(X_proj, s=5, c='black', title=None):
     plt.scatter(*X_proj.T, s=s, c=c, linewidth=0, alpha=0.25)
     plt.title(f'The 2D feature projection space visualized' if title is None else title)
     
-# Plot the 2D space projected clusters
-def plot_2d_feature_space_clusters(X_proj, clusterer):
-    # First divise the colors
-    color_palette = sns.color_palette('Paired', 100)
-    cluster_colors = [color_palette[x] if x >= 0
-                      else (0, 0, 0)
-                      for x in clusterer.labels_]
-    
-    # Compute the noize level
-    cluster_labels, cluster_sizes = np.unique(clusterer.labels_, return_counts=True)
-    noize_index = np.argwhere(cluster_labels == -1)[0][0]
-    num_noize_samples = cluster_sizes[noize_index]
-    noize = num_noize_samples*100/len(clusterer.labels_)
-    logger.info(f'Found noize label index: {noize_index}, noize samples count: {num_noize_samples}, noize: {round(noize, 2)} %')
-    
-    # Plot the results
-    plot_2d_feature_space(X_proj, c=cluster_colors, title=f'The feature clusters 2D projectsion, noize level={round(noize, 2)}%')
-
-    
 # Define the plotting function
 def plot_variance_explained(extractor):
-    feature_names, var_values, raw_relation_df = extractor.get_feature_names_out()
+    main_features, feature_conts_df, explained_variance = extractor.get_feature_names_out()
     
     fig, ax = plt.subplots(figsize=(15, 5))
     plt.xticks(rotation=45, ha='right')
-    plt.bar(x=feature_names, height=var_values)
+    plt.bar(x=main_features, height=explained_variance)
     plt.title(f'The variance explained by main PCA components represented by their most contributing features')
+    
+# Extract information about the PCA run
+def get_pca_run_stats(pca, input_features):
+    pca_feature_names = pca.get_feature_names_out(input_features)
+    logger.info(f'The PCA feature name out:\n{pca_feature_names}')
+
+    # Prepare the components relations with features
+    raw_relation_df = pd.DataFrame(pca.components_, columns=input_features, index = pca_feature_names)
+    # Take the absolute values as the sign does not matter
+    raw_relation_df = raw_relation_df.abs()
+
+    # TODO: Instead of dumping raw_relation_df and relation_df, dump the top features contributing to the PCA components with values
+
+    # Get the most features contributing most to the PCA components
+    feature_conts_df = raw_relation_df.idxmax(axis=1)
+
+    feature_map = {f'pca{idx}' : feature_conts_df.loc[f'pca{idx}'] for idx in range(len(pca_feature_names))}
+    main_features = [feature_map[pca_name] for pca_name in pca_feature_names]
+    explained_variance = pca.explained_variance_ratio_
+
+    return main_features, feature_conts_df, explained_variance

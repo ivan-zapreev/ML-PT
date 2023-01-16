@@ -27,14 +27,6 @@ def compute_elbouw_eps_value(X, min_samples, s_value):
     
     return distances, x_pos, y_pos
 
-def visualize_elbow_eps_value(distances, x_pos, y_pos, title):
-    fig, ax = plt.subplots(figsize=(15, 3))
-    plt.plot(distances)
-    ax.set_yscale('log')
-    plt.plot([x_pos, x_pos], [-10, 40], 'k--', lw=1)
-    plt.plot([-10, 60000], [y_pos, y_pos], 'k--', lw=1)
-    plt.title(title + f', eps: {round(y_pos, 2)}')
-
 def compute_dbscan_clusters(X, eps_value, min_samples):
     # Apply DBSCAN for clustering of the provided data
     logger.debug(f'Start fitting DBSCAN model')
