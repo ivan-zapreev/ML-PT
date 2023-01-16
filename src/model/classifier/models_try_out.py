@@ -115,20 +115,28 @@ def __compute_average_stats(model_stats):
     
     return accuracy, precision, recall, f1_score, time
     
+def train_test_single_model(model, name, X, y, n_splits=10, n_repeats=3, random_state=1):
+    # Evaluae the model
+    model_stats = __evaluate_model(model, name, X, y, n_splits=n_splits, n_repeats=n_repeats, random_state=random_state)
+
+    # Compute the average model stats
+    accuracy, precision, recall, f1_score, time = __compute_average_stats(model_stats)
+
+    logger.info(f'The "{name}" model f1-score: {round_val(f1_score)}, accuracy: {round_val(accuracy)}, '\
+                f'precision: {round_val(precision)}, recall: {round_val(recall)}, time: {round_val(time)} sec.')
+    
+    return f1_score, accuracy, precision, recall, time
+    
 def train_test_on_models(X, y, n_splits=10, n_repeats=3, random_state=1):
     logger.info(f'Going to use k-fold cross-validation with n_splits: {n_splits}, n_repeats: {n_repeats}, random_state: {random_state}')
     
     # Create and train the models
     results = []
     for name, model in tqdm(_CLASSIFIERS.items(), desc=f'Trying out classifiers'):
-        # Evaluae the model
-        model_stats = __evaluate_model(model, name, X, y, n_splits=n_splits, n_repeats=n_repeats, random_state=random_state)
+        # Check on the model fitness
+        f1_score, accuracy, precision, recall, time = train_test_single_model(model, name, X, y, n_splits, n_repeats, random_state)
         
-        # Compute the average model stats
-        accuracy, precision, recall, f1_score, time = __compute_average_stats(model_stats)
-        
-        logger.info(f'The "{name}" model f1-score: {round_val(f1_score)}, accuracy: {round_val(accuracy)}, '\
-                    f'precision: {round_val(precision)}, recall: {round_val(recall)}, time: {round_val(time)} sec.')
+        # Remember the results
         results.append((f1_score, accuracy, precision, recall, time, name))
 
     # Sort to get the best accuracy with the best precision
@@ -141,17 +149,6 @@ def train_test_dnn_model(X, y, emb_dim = 30, num_epochs = 100, batch_size = 32, 
 
     # Instantiate the activity discovery model
     model = instantiate_dnn_model(X.shape[1], emb_dim=emb_dim, num_epochs=num_epochs, batch_size=batch_size, verbose=verbose)
-
-    # Set the model name
-    name = 'Deep Neural Network'
     
     # Train and test the model
-    model_stats = __evaluate_model(model, name, X, y, n_splits=n_splits, n_repeats=n_repeats, random_state=random_state)
-    
-    # Compute the average model stats
-    accuracy, precision, recall, f1_score, time = __compute_average_stats(model_stats)
-
-    logger.info(f'The "{name}" model f1-score: {round_val(f1_score)}, accuracy: {round_val(accuracy)}, '\
-                f'precision: {round_val(precision)}, recall: {round_val(recall)}, time: {round_val(time)} sec.')
-
-    return f1_score, accuracy, precision, recall, time
+    return train_test_single_model(model, 'Deep Neural Network', X, y, n_splits, n_repeats, random_state)
