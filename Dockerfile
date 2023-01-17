@@ -8,10 +8,16 @@ COPY data/extractor.pkl ./data/
 COPY src ./
 COPY requirements.txt ./
 
-RUN apk update && apk add python3-dev build-base
+RUN apk update
+RUN apk add --no-cache python3-dev
+RUN apk add --no-cache build-base
+RUN apk add --no-cache gfortran 
+RUN apk add --no-cache make
+RUN apk add --no-cache openblas-dev
+RUN apk add --no-cache cmake
 
-RUN pip install --no-cache-dir --upgrade pip \
-  && pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip 
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Excpose the port to serve the HTTP requests
 EXPOSE 8080
