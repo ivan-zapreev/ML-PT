@@ -70,13 +70,13 @@ Requires *Python 3.8*
 ## Using Docker container
 
 1. Install Docker
-     ``https://docs.docker.com/get-docker/``
+    * ``https://docs.docker.com/get-docker/``
 2. Pull docker image:
     * ``docker image pull zapreevis/python-ml-pt:latest``
-4. Run docker image:
-    * `docker run -p 127.0.0.1:8080:8080 -i -t zapreevis/python-ml-pt:latest``
+4. Run docker container:
+    * ``docker run -p 127.0.0.1:8080:8080 -i -t zapreevis/python-ml-pt:latest``
 5. Run test notebook
-    * `ML-PT % 06_run_test_client.ipynb
+    * ``ML-PT % 06_run_test_client.ipynb``
 
 # Restful API examples
 
