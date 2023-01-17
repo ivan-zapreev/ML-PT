@@ -9,7 +9,11 @@ from src.utils.logger import logger
 from src.features.utils import get_pca_run_stats
 
 class FeatureExtractor():
-   
+    # The ordered list of expected columns
+    EXPECTED_COLUMNS = ['EVENT_ID', 'CLIENT_IP', 'CLIENT_USERAGENT', 'IS_USERAGENT_VALID', \
+                        'REQUEST_SIZE', 'RESPONSE_CODE', 'MATCHED_VARIABLE_SRC', \
+                        'MATCHED_VARIABLE_NAME', 'MATCHED_VARIABLE_VALUE']
+
     # Define various column data fitters
     __cu_feature_fitter = lambda self, col_data: self.cu_tfidf.fit(col_data)
     __mvs_feature_fitter = lambda self, col_data: self.mvss_tfidf.fit(col_data)
@@ -101,7 +105,7 @@ class FeatureExtractor():
         return X
     
     def __get_feature_columns(self, data_df, is_log=False):
-        feature_cols = [col_name for col_name in data_df.columns.values if col_name not in self.ignore_columns]
+        feature_cols = [col_name for col_name in self.EXPECTED_COLUMNS if col_name not in self.ignore_columns]
         
         if is_log: logger.info(f'Considering feature columns: {feature_cols}')
         
