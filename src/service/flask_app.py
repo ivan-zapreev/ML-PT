@@ -24,7 +24,7 @@ from src.service.utils import request_data_to_df
 from src.utils.file_utils import load_pickle_data
 
 # Define the default server name
-_SERVER_NAME_DEF = 'localhost'
+_SERVER_HOST_DEF = 'localhost'
 # Define the default value for the server port
 _SERVER_PORT_DEF = 8080
 
@@ -39,8 +39,8 @@ def __obtain_arguments_parser():
     ap = argparse.ArgumentParser()
 
     # Add the arguments to the parser
-    ap.add_argument("-sn", "--server_name", required=False, default = _SERVER_NAME_DEF,
-                    help="The server name to bind to, defaults to: {_SERVER_NAME_DEF}")
+    ap.add_argument("-sh", "--server_host", required=False, default = _SERVER_HOST_DEF,
+                    help="The server host to bind to, defaults to: {_SERVER_HOST_DEF}")
     
     ap.add_argument("-sp", "--server_port", required=False, default = _SERVER_PORT_DEF,
                     help="The TCP port the server will listen to, defaults to: {_SERVER_PORT_DEF}")
@@ -53,8 +53,8 @@ def __obtain_arguments_parser():
 def __obtain_script_args():
     args = __obtain_arguments_parser()
 
-    server_name = args['server_name']
-    logger.info(f'Starting TCP Classifier server on: {server_name}')
+    server_host = args['server_host']
+    logger.info(f'Starting TCP Classifier server on: {server_host}')
 
     server_port = args['server_port']
     logger.info(f'Starting TCP Classifier server on port: {server_port}')
@@ -62,7 +62,7 @@ def __obtain_script_args():
     data_folder = args['data_folder']
     logger.info(f'The pre-trined sub-models data folder: {data_folder}')
 
-    return server_name, server_port, data_folder
+    return server_host, server_port, data_folder
 
 def __load_pre_trained_models(data_folder):
     logger.info(f'Start loading the Classifier pre-trained sub-models from: {data_folder}')
@@ -119,7 +119,7 @@ def handle_prediction_requests():
 
 if __name__ == '__main__':
     # Get the script arguments
-    server_name, server_port, data_folder = __obtain_script_args()
+    server_host, server_port, data_folder = __obtain_script_args()
 
     # Load the necessary files from
     models = __load_pre_trained_models(data_folder)
@@ -128,5 +128,5 @@ if __name__ == '__main__':
     logger.info(f'Starting the Flask server')
     FLASK_APP.config['extractor'] = models['extractor']
     FLASK_APP.config['classifier'] = models['classifier']
-    FLASK_APP.run(host=server_name, port=server_port)
+    FLASK_APP.run(host=server_host, port=server_port)
 

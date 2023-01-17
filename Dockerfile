@@ -21,4 +21,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Excpose the port to serve the HTTP requests
 EXPOSE 8080
 
-CMD ["python", "./src/service/flask_app.py"]
+CMD ["python", "./src/service/flask_app.py", "--server_host", "0.0.0.0"]
