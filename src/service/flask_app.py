@@ -2,6 +2,8 @@ import os
 import sys
 import argparse
 
+import pandas as pd
+
 from flask import Flask
 from flask import request
 from flask import jsonify
@@ -20,7 +22,6 @@ from src.utils.logger import logger
 from src.service.utils import wrangle_raw_data
 from src.service.utils import request_data_to_df
 from src.utils.file_utils import load_pickle_data
-from src.model.classifier.events import EventsClassifier
 
 # Define the default server name
 _SERVER_NAME_DEF = 'localhost'
@@ -31,7 +32,7 @@ _SERVER_PORT_DEF = 8080
 _DATA_FOLDER_DEF = os.path.join('.', 'data')
 
 # Stores the default names for the input files needed
-_SERVER_PKL_FILES = {'classifier': True, 'cu_tfidf': True, 'mvn_tfidf': True, 'mvss_tfidf': True, 'mvv_tfidf': True, 'scaler': False, 'pca': False}
+_SERVER_PKL_FILES = {'classifier': True, 'extractor': True}
 
 def __obtain_arguments_parser():
     # Construct the argument parser
@@ -63,20 +64,30 @@ def __obtain_script_args():
 
     return server_name, server_port, data_folder
 
-def __load_classifier_pkl_files(data_folder):
+def __load_pre_trained_models(data_folder):
     logger.info(f'Start loading the Classifier pre-trained sub-models from: {data_folder}')
-    classifier_data = {}
+    models = {}
     for file_name, is_compulsory in _SERVER_PKL_FILES.items():
         data, file_path = load_pickle_data(data_folder, file_name)
         if data is None and is_compulsory:
-            raise Exception('Missing compulsory server input file: {file_path}')
+            raise Exception(f'Missing compulsory server input file: {file_path}')
         else:
-            classifier_data[file_name] = data
+            models[file_name] = data
 
-    return classifier_data
+    return models
+
+def classify_events(extractor, classifier, events_df):
+    # Extract features
+    X = extractor.transform(events_df)
+
+    # Classify events
+    y = classifier.predict(X)
+
+    # Return the resulting dataframe
+    return pd.DataFrame({'EVENT_ID' : events_df['EVENT_ID'].values, 'LABEL_PRED' : y})
 
 @FLASK_APP.post("/predict")
-def classify_events():
+def handle_prediction_requests():
     res_data, res_code = None, None
     if request.is_json:
         req_data = request.get_json()
@@ -90,7 +101,7 @@ def classify_events():
             events_df = wrangle_raw_data(events_df)
 
             # Classify the events
-            classes_df = FLASK_APP.config['classifier'].classify_events(events_df)
+            classes_df = classify_events(FLASK_APP.config['extractor'], FLASK_APP.config['classifier'], events_df)            
 
             # Set the result
             res_data, res_code = jsonify(classes_df.to_dict('records')), 200
@@ -108,14 +119,11 @@ if __name__ == '__main__':
     server_name, server_port, data_folder = __obtain_script_args()
 
     # Load the necessary files from
-    classifier_data = __load_classifier_pkl_files(data_folder)
-    
-    # Instantiate the classifier
-    logger.info(f'Instantiating the classifier...')
-    classifier = EventsClassifier(**classifier_data)
+    models = __load_pre_trained_models(data_folder)
     
     # Run the Flask Server
     logger.info(f'Starting the Flask server')
-    FLASK_APP.config['classifier'] = classifier
+    FLASK_APP.config['extractor'] = models['extractor']
+    FLASK_APP.config['classifier'] = models['classifier']
     FLASK_APP.run(host=server_name, port=server_port)
 
