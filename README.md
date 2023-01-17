@@ -7,7 +7,7 @@ The main content can be reached by browsing through the following notebooks:
     - Data wrangling
     - Preliminary analysis of the data columns
 * ``02_data_analysis.ipynb`` **(!)**
-    - In depth investigation of the data columns value
+    - In depth investigation of the data column values
     - PCA analysis and feature space visualization
     - Extracting and dumping the features
     - ***Storing the features extractor*** for use in online events classification
@@ -18,13 +18,13 @@ The main content can be reached by browsing through the following notebooks:
 * ``04_select_classifier.ipynb``
     - Choosing a classifier for online event classification
     - Training and comparing default performance of 13 classifiers
-    - Motivating selection of Random Forest Classifier 
+    - ***Motivating selection of Random Forest Classifier***
 * ``05_tune_classifier.ipynb`` **(!)**
     - Hyperparameters tuning of the Random Forest Classifier
     - Training the Random Forest Classifier with best hyperparameters
     - ***Storing the classifier*** for use in online events classification
 * ``06_run_test_client.ipynb`` **(!)**
-    - Running the client side to evaluate the online classifier ran separately as a Flask server
+    - Runs the client side to evaluate the online classifier ran separately as a Flask server
     - Loads the initially provided raw events data and queries the online service for classification
     - Compares the resulting event classes with the ones generated with Random Forest Classifier
         - This is done for the sanity check to make sure data wrangling and featurization work well
