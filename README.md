@@ -18,15 +18,17 @@ The main content can be reached by browsing through the following notebooks:
 * ``04_select_classifier.ipynb``
     - Choosing a classifier for online event classification
     - Training and comparing default performance of 13 classifiers
+        - *Using k-fold cross-validation*
     - ***Motivating selection of Random Forest Classifier***
 * ``05_tune_classifier.ipynb`` **(!)**
     - Hyperparameters tuning of the Random Forest Classifier
+        - *Using Random and Grid search with k-fold cross-validation*
     - Training the Random Forest Classifier with best hyperparameters
     - ***Storing the events classifier*** to be used in online events classification
 * ``06_run_test_client.ipynb`` **(!)**
-    - ***Run the client side to evaluate the online classifier ran as a Restful Application***
-    - Load the initially provided raw events data and queries the online service for classification
-    - Compare the resulting event classes with the ones generated with Random Forest Classifier
+    - ***Runs the client side to evaluate the online classifier ran as a Restful (Flask) Application***
+    - Loads the initially provided raw events data and queries the online service for classification
+    - Compares the resulting event classes with the ones generated with Random Forest Classifier
         - This is done for the sanity check to make sure data wrangling and featurization work well
 
 **NOTE 01:** The notebooks ``01`` to ``05`` above can be run sequentially, if needed to re-produce the results or re-generate the classifier and feature extractor models.
