@@ -79,6 +79,7 @@ def __load_pre_trained_models(data_folder):
 def classify_events(extractor, classifier, events_df):
     # Extract features
     X = extractor.transform(events_df)
+    logger.info(f'The computed feature space shape is: {X.shape}')    
 
     # Classify events
     y = classifier.predict(X)
