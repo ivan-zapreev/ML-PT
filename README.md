@@ -71,10 +71,12 @@ Requires *Python 3.8*
 
 1. Install Docker
      ``https://docs.docker.com/get-docker/``
-3. Run docker image:
-    * ``ML-PT % docker run -i -t python-ml-pt``
-4. Run test notebook
-    * 06_run_test_client.ipynb
+2. Pull docker image:
+    * ``docker image pull zapreevis/python-ml-pt:latest``
+4. Run docker image:
+    * `docker run -p 127.0.0.1:8080:8080 -i -t zapreevis/python-ml-pt:latest``
+5. Run test notebook
+    * `ML-PT % 06_run_test_client.ipynb
 
 # Restful API examples
 
@@ -112,7 +114,8 @@ The example service response structure is:
 ``ML-PT % pipreqs . --force``
 
 ## Re-generate docker image
-``ML-PT % docker build -t python-ml-pt .``
+1. ``ML-PT % docker build -t zapreevis/python-ml-pt:latest .``
+2. ``docker push zapreevis/python-ml-pt:latest``
 
 # TODOs
 1. Event though we get at most 2.8% of noize when running DBSCAN, one can try to reduce the noize levels by reducing *min_samples*
