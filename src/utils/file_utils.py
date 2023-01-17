@@ -1,11 +1,26 @@
 import os
-import bz2
 import pickle
 
 import numpy as np
-import _pickle as cPickle
 
 from src.utils.logger import logger
+
+def dump_pickle_data(folder_path, file_name, data):
+    file_path = os.path.join(folder_path, f'{file_name}.pkl')
+    logger.info(f'Dumping pickle file into: {file_path}')
+    with open(file_path, 'wb') as pfile:
+        pickle.dump(data, pfile, protocol=pickle.HIGHEST_PROTOCOL)
+
+def load_pickle_data(folder_path, file_name):
+    file_path = os.path.join(folder_path, f'{file_name}.pkl')
+    logger.info(f'Loading pickle data from: {file_path}')
+    if os.path.isfile(file_path):
+        with open(file_path, 'rb') as pfile:
+            data = pickle.load(pfile)
+    else:
+        logger.warning(f'The required file: {file_path} is missing!')
+        data = None
+    return data, file_path
 
 def store_numpy_zc(file_path, **kwds):
     logger.info(f'Dumping compressed numpy z file into: {file_path}.npz')

@@ -6,6 +6,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 from src.utils.logger import logger
+from src.utils.file_utils import dump_pickle_data
 from src.features.utils import get_pca_run_stats
 
 class FeatureExtractor():
@@ -192,3 +193,22 @@ class FeatureExtractor():
         
         # Transform the data
         return self.transform(data_df)
+    
+    def dump_sub_models(self, data_folder):
+        # Dump tokenizers
+        dump_pickle_data(data_folder, 'cu_tfidf', self.cu_tfidf)
+        dump_pickle_data(data_folder, 'mvss_tfidf', self.mvss_tfidf)
+        dump_pickle_data(data_folder, 'mvn_tfidf', self.mvn_tfidf)
+        dump_pickle_data(data_folder, 'mvv_tfidf', self.mvv_tfidf)
+
+        # Dump Scaler sub-model
+        if self.scaler is not None:
+            dump_pickle_data(data_folder, 'scaler', self.scaler)
+        else:
+            logger.warning(f'Scaling was disabled, the scaler sub-model will not be dumped!')
+        
+        # Dump PCA sub-model
+        if self.pca is not None:
+            dump_pickle_data(data_folder, 'pca', self.pca)
+        else:
+            logger.warning(f'PCA was disabled, the scaler sub-model will not be dumped!')
