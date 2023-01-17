@@ -9,7 +9,12 @@ Requires at least *Python 3.8.13*
 
 ## Local
 
-1. ``ML-PT % pip install -r requirements.txt``
+1. Install packages
+    * ``ML-PT % pip install -r requirements.txt``
+2. Run server
+    * ``python ./src/service/flask_app.py``
+3. Run test
+    * 06_run_test_client.ipynb
 
 ## Docker
 
