@@ -92,7 +92,7 @@ def handle_prediction_requests():
     res_data, res_code = None, None
     if request.is_json:
         req_data = request.get_json()
-        logger.info(f'Got new request type: {type(req_data)} data: {req_data}')
+        logger.debug(f'Handling new JSON request!')
         
         try:
             # Parse the request data
