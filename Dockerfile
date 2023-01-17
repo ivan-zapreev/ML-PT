@@ -1,20 +1,19 @@
-FROM python:3.8-alpine
+FROM python:3.8
 
 WORKDIR /usr/src/app
 
-RUN mkdir data
-COPY data/classifier.pkl ./data/
-COPY data/extractor.pkl ./data/
-COPY src ./
-COPY requirements.txt ./
+COPY data/classifier.pkl ./data/classifier.pkl
+COPY data/extractor.pkl ./data/extractor.pkl
+ADD  src/ ./src
+COPY requirements.txt ./requirements.txt
 
-RUN apk update
-RUN apk add --no-cache python3-dev
-RUN apk add --no-cache build-base
-RUN apk add --no-cache gfortran 
-RUN apk add --no-cache make
-RUN apk add --no-cache openblas-dev
-RUN apk add --no-cache cmake
+RUN apt-get update 
+RUN apt-get install build-essential -y
+RUN apt-get install python3-dev -y
+RUN apt-get install gfortran -y
+RUN apt-get install make -y
+RUN apt-get install libopenblas-dev -y
+RUN apt-get install cmake -y
 
 RUN pip install --no-cache-dir --upgrade pip 
 RUN pip install --no-cache-dir -r requirements.txt
