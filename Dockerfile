@@ -8,7 +8,7 @@ COPY data/extractor.pkl ./data/
 COPY src ./
 COPY requirements.txt ./
 
-RUN apk update && apk add python3-dev gcc g++ libc-dev libffi-dev
+RUN apk update && apk add python3-dev build-base
 
 RUN pip install --no-cache-dir --upgrade pip \
   && pip install --no-cache-dir -r requirements.txt
