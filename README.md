@@ -47,7 +47,7 @@ The main content can be reached by browsing through the following notebooks:
         * **model/** - packages related to clustering and classification model training/tuning
             * **dbscan/** - DBSCAN tuning related sources
             * **classifier/** - files related to selecting and training/tuning the classifier
-        * **service/** - Flask service related file for the server
+        * **service/** - Flask-based event classification service
         * **utils/** - various utility source files
    * *READRE.md* - this read-me file
    * *LICENSE* - licensing information file
