@@ -30,6 +30,7 @@ The main content can be reached by browsing through the following notebooks:
         - This is done for the sanity check to make sure data wrangling and featurization work well
 
 **NOTE 01:** The notebooks ``01`` to ``05`` above can be run sequentially, if needed to re-produce the results or re-generate the classifier and feature extractor models.
+
 **NOTE 02:** To test the service one does not have to run notebooks ``01`` to ``05`` but shall:
 1. Run the event classification restul service (see sections below)
 2. Execute the ``06_run_test_client.ipynb`` notebook or use his/her own client to send requests to:
@@ -55,7 +56,7 @@ The main content can be reached by browsing through the following notebooks:
    * *\*.ipynb* - multiple notebooks containing the main research work and testing
 
 # How to run the Service
-Requires at least *Python 3.8.13*
+Requires *Python 3.8*
 
 ## Using local server
 
@@ -82,4 +83,4 @@ Requires at least *Python 3.8.13*
 ``ML-PT % docker build -t python-ml-pt .``
 
 # TODOs
-1. Event though the maximum % od noize in DBSCAN is 2.8%, one can try to reduce the noize levels by reducing *min_samples*
+1. Event though we get at most 2.8% of noize when running DBSCAN, one can try to reduce the noize levels by reducing *min_samples*
