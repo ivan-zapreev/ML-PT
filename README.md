@@ -42,15 +42,15 @@ The core of the task is devising unsupervised feature detection method for netwo
 # Repository structure
 
 * **ML-PT/** - the root folder
-    * **docs/** - stores the paper used for inspiration and the task description
+    * **docs/** - the papers used for inspiration and the test task description
     * **data/** - the provided raw data csv along with files generated from notebooks
-    * **src/** - the main source code folde
+    * **src/** - the main source code folder
         * **wrangler/** - data wrangling related files
-        * **features/** - feature extraction related file
-        * **model/** - packages related to clustering and classification model training/tuning
-            * **dbscan/** - DBSCAN tuning related sources
-            * **classifier/** - files related to selecting and training/tuning the classifier
-        * **service/** - Flask-based event classification service
+        * **features/** - feature extraction related files
+        * **model/** - packages related to clustering and classification models training/tuning
+            * **dbscan/** - the DBSCAN tuning, cluster visulisation related sources
+            * **classifier/** - the files related to selecting and training/tuning the classifier
+        * **service/** - Flask-based event classification Restful Service
         * **utils/** - various utility source files
    * *README.md* - this read-me file
    * *LICENSE* - licensing information file
