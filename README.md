@@ -65,7 +65,7 @@ Requires *Python 3.8*
 2. Run server
     * ``ML-PT % python ./src/service/flask_app.py``
 3. Run test notebook
-    * 06_run_test_client.ipynb
+    * ``ML-PT % 06_run_test_client.ipynb``
 
 ## Using Docker container
 
@@ -115,7 +115,7 @@ The example service response structure is:
 
 ## Re-generate docker image
 1. ``ML-PT % docker build -t zapreevis/python-ml-pt:latest .``
-2. ``docker push zapreevis/python-ml-pt:latest``
+2. ``ML-PT % docker push zapreevis/python-ml-pt:latest``
 
 # TODOs
 1. Event though we get at most 2.8% of noize when running DBSCAN, one can try to reduce the noize levels by reducing *min_samples*
