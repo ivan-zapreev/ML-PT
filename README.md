@@ -1,5 +1,7 @@
 # ML-PT
-The test task for ML-PT With the task desacription available via the [link](https://heyiamsasha.notion.site/ML-PT-0bc4ce5012604ed397f040a1bdc29858).
+The ML-PT test task solution with the detailed task description available via the [link](https://heyiamsasha.notion.site/ML-PT-0bc4ce5012604ed397f040a1bdc29858).
+
+The core of the task is devising unsupervised feature detection method for network events - HTTP requests, and implementing it as a Restful Service.
 
 The main content can be reached by browsing through the following notebooks:
 * ``01_data_exploration.ipynb``
@@ -27,7 +29,7 @@ The main content can be reached by browsing through the following notebooks:
     - Training the Random Forest Classifier with best hyperparameters
     - ***Storing the events classifier*** to be used in online events classification
 * ``06_run_test_client.ipynb`` **(!)**
-    - ***Runs the client side to evaluate the online classifier ran as a Restful (Flask) Application***
+    - ***Runs the client side to evaluate the online classifier ran as a Restful (Flask) Service***
     - Loads the initially provided raw events data and queries the online service for classification
     - Compares the resulting event classes with the ones generated with Random Forest Classifier
         - This is done for the sanity check to make sure data wrangling and featurization work well
