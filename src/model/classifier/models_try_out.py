@@ -31,8 +31,6 @@ from sklearn.ensemble import GradientBoostingClassifier
 
 from src.utils.logger import logger
 
-from src.model.classifier.dnn_model import instantiate_dnn_model
-
 warnings.filterwarnings("ignore", category=UndefinedMetricWarning) 
 
 _OUTPUT_ROUND_PRECISION = 4
@@ -157,12 +155,3 @@ def train_test_on_models(X, y, n_splits=10, n_repeats=3, random_state=1):
     results = sorted(results, reverse=True)
 
     return results
-
-def train_test_dnn_model(X, y, emb_dim = 30, num_epochs = 100, batch_size = 32, verbose = 1, n_splits=10, n_repeats=3, random_state=1):
-    logger.info(f'Going to use k-fold cross-validation with n_splits: {n_splits}, n_repeats: {n_repeats}, random_state: {random_state}')
-
-    # Instantiate the activity discovery model
-    model = instantiate_dnn_model(X.shape[1], emb_dim=emb_dim, num_epochs=num_epochs, batch_size=batch_size, verbose=verbose)
-    
-    # Train and test the model
-    return train_test_single_model(model, 'Deep Neural Network', X, y, n_splits, n_repeats, random_state)
