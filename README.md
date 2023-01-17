@@ -10,11 +10,11 @@ The main content can be reached by browsing through the following notebooks:
     - In depth investigation of the data columns value
     - PCA analysis and feature space visualization
     - Extracting and dumping the features
-    - *Storing the features extractor* for use in online events classification
+    - ***Storing the features extractor*** for use in online events classification
 * ``03_tune_dbscan.ipynb`` **(!)**
     - Using DBSCAN for feature clustering
     - Tuning DBSCAN for optimal clustering
-    - Identifying GOOD, ATTACK and Unclassified (Noize) clusters
+    - ***Identifying GOOD, ATTACK and Unclassified (Noize) clusters***
 * ``04_select_classifier.ipynb``
     - Choosing a classifier for online event classification
     - Training and comparing default performance of 13 classifiers
@@ -22,7 +22,7 @@ The main content can be reached by browsing through the following notebooks:
 * ``05_tune_classifier.ipynb`` **(!)**
     - Hyperparameters tuning of the Random Forest Classifier
     - Training the Random Forest Classifier with best hyperparameters
-    - *Storing the classifier* for use in online events classification
+    - ***Storing the classifier*** for use in online events classification
 * ``06_run_test_client.ipynb`` **(!)**
     - Running the client side to evaluate the online classifier ran separately as a Flask server
     - Loads the initially provided raw events data and queries the online service for classification
