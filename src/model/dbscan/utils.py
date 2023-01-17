@@ -32,7 +32,7 @@ def visualize_elbow_eps_value(distances, x_pos, y_pos, title):
     ax.set_yscale('log')
     plt.plot([x_pos, x_pos], [-10, 40], 'k--', lw=1)
     plt.plot([-10, 60000], [y_pos, y_pos], 'k--', lw=1)
-    plt.title(title + f', eps: {round(y_pos, 2)}')
+    plt.title(title + f', eps: {round(y_pos, 4)}')
 
 # Plot cluster sizes for specified S values
 def plot_cluster_sizes_for_s(s_values, s_results, s_value):
