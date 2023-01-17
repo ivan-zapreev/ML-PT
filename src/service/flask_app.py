@@ -2,6 +2,13 @@ import os
 import sys
 import argparse
 
+from flask import Flask
+from flask import request
+from flask import jsonify
+
+# Instantiate Flust app
+app = Flask(__name__)
+
 # Make sure we have the proper package folder in the path
 server_file_folder = os.path.dirname(os.path.abspath(__file__))
 print(f'The server source file folder is: {server_file_folder}')
@@ -11,12 +18,10 @@ sys.path.append(package_root)
 
 from src.utils.logger import logger
 from src.utils.file_utils import load_pickle_data
-from src.service.socker_server import SocketServer
 from src.model.classifier.events import EventsClassifier
 
 # Define the default server name
 _SERVER_NAME_DEF = 'localhost'
-
 # Define the default value for the server port
 _SERVER_PORT_DEF = 8080
 
@@ -68,20 +73,18 @@ def __load_classifier_pkl_files(data_folder):
 
     return classifier_data
 
-def __run_classifier_request_handling(server_name, server_port, classifier):
-    # Instantiate the server
-    server = SocketServer(server_name, server_port, classifier)
+@app.post("/predict")
+def classify_events():
+    res_data, res_code = None, None
+    if request.is_json:
+        req_data = request.get_json()
+        logger.info(f'Got new request: {req_data}')
+        
+        res_data, res_code = '', 200
+    else:
+        res_data, responce_code = {"error": "Request must be JSON"}, 415
     
-    # Start the server
-    server.start()
-
-    # Allow to shut down on key press
-    logger.info('----------------------------------------------------------------')
-    logger.info('Press <ENTER> to terminate the image serving HTTP server ...')
-    _ = input()
-    
-    # Run the shut-down sequence
-    server.stop()
+    return res_data, res_code
 
 if __name__ == '__main__':
     # Get the script arguments
@@ -91,7 +94,11 @@ if __name__ == '__main__':
     classifier_data = __load_classifier_pkl_files(data_folder)
     
     # Instantiate the classifier
+    logger.info(f'Instantiating the classifier...')
     classifier = EventsClassifier(**classifier_data)
     
-    # Run the TCP server
-    __run_classifier_request_handling(server_name, server_port, classifier)
+    # Run the Flask Server
+    logger.info(f'Starting the Flask server')
+    app.config['classifier'] = classifier
+    app.run(host=server_name, port=server_port)
+
