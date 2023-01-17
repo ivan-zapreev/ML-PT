@@ -57,22 +57,36 @@ _CLASSIFIERS = {
     'Decision Tree Classifier'      : DecisionTreeClassifier(max_depth=10)          # 
 }
 
-def __compute_model_metrics(y_test, y_pred, start, end, model_stats):
+def _compute_mode_metrics(y, y_pred):
+    # Compute F1 score
+    f1_value = f1_score(y, y_pred, average='weighted')
+    # Compute accuracy
+    accuracy = accuracy_score(y, y_pred)
+    # Compute precision
+    precision = precision_score(y, y_pred, average='weighted')
+    # Compute recall
+    recall = recall_score(y, y_pred, average='weighted')
+    
+    return f1_value, accuracy, precision, recall
+
+def report_model_metrics(y, y_pred, name):
+    # Compute model metrics
+    f1_value, accuracy, precision, recall = _compute_mode_metrics(y, y_pred)
+
+    logger.info(f'"{name}" model, F1-score: {round_val(f1_value)}, Accuracy (TP+TN): {round_val(accuracy)}, ' \
+                f'Precision (FP): {round_val(precision)}, Recall (FN): {round_val(recall)}')
+
+def __compute_model_metrics(y, y_pred, start, end, model_stats):
     logger.debug(f'Computing model metrics...')
     
-    # Compute accuracy
-    model_stats['accuracy'].append(accuracy_score(y_test, y_pred))
+    # Compute model metrics
+    f1_value, accuracy, precision, recall = _compute_mode_metrics(y, y_pred)
     
-    # Compute precision
-    model_stats['precision'].append(precision_score(y_test, y_pred, average='weighted'))
-    
-    # Compute recall
-    model_stats['recall'].append(recall_score(y_test, y_pred, average='weighted'))
-    
-    # Compute recall
-    model_stats['f1_score'].append(f1_score(y_test, y_pred, average='weighted'))
-    
-    # Execution time
+    # Store the values
+    model_stats['f1_score'].append(f1_value)
+    model_stats['accuracy'].append(accuracy)
+    model_stats['precision'].append(precision)
+    model_stats['recall'].append(recall)
     model_stats['time'].append(round(end - start, 2))
 
 def __train_classifier(clf, X_train, y_train, X_test, y_test, model_stats):
