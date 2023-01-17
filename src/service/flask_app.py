@@ -98,6 +98,8 @@ def handle_prediction_requests():
             # Parse the request data
             events_df = request_data_to_df(req_data)
             
+            logger.info(f'Obtained request events data frame:\n{events_df.head(10)}')
+            
             # Wrangle data
             events_df = wrangle_raw_data(events_df)
 
