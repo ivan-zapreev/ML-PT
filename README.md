@@ -1,7 +1,7 @@
 # ML-PT
-The ML-PT test task solution with the detailed task description available via the [link](https://heyiamsasha.notion.site/ML-PT-0bc4ce5012604ed397f040a1bdc29858).
+This repository contains a solution for the ML-PT test task with the detailed task description available via the [link](https://heyiamsasha.notion.site/ML-PT-0bc4ce5012604ed397f040a1bdc29858).
 
-The core of the task is devising unsupervised feature detection method for network events - HTTP requests, and implementing it as a Restful Service. The main content of the provided solution can be reached by browsing through the following notebooks:
+The core of the task is devising unsupervised anomaly/attack detection method for network events - HTTP requests, and implementing it as a Restful Service. The main content of the provided solution can be reached by sequentially browsing through the following notebooks:
 * ``01_data_exploration.ipynb``
     - Initial data exploration
     - ***Data wrangling***
