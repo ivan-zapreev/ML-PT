@@ -6,8 +6,8 @@ from flask import Flask
 from flask import request
 from flask import jsonify
 
-# Instantiate Flust app
-app = Flask(__name__)
+# Instantiate Flask app
+FLASK_APP = Flask(__name__)
 
 # Make sure we have the proper package folder in the path
 server_file_folder = os.path.dirname(os.path.abspath(__file__))
@@ -17,6 +17,8 @@ print(f'Adding package root folder to path: {package_root}')
 sys.path.append(package_root)
 
 from src.utils.logger import logger
+from src.service.utils import wrangle_raw_data
+from src.service.utils import request_data_to_df
 from src.utils.file_utils import load_pickle_data
 from src.model.classifier.events import EventsClassifier
 
@@ -73,16 +75,31 @@ def __load_classifier_pkl_files(data_folder):
 
     return classifier_data
 
-@app.post("/predict")
+@FLASK_APP.post("/predict")
 def classify_events():
     res_data, res_code = None, None
     if request.is_json:
         req_data = request.get_json()
-        logger.info(f'Got new request: {req_data}')
+        logger.info(f'Got new request type: {type(req_data)} data: {req_data}')
         
-        res_data, res_code = '', 200
+        try:
+            # Parse the request data
+            events_df = request_data_to_df(req_data)
+            
+            # Wrangle data
+            events_df = wrangle_raw_data(events_df)
+
+            # Classify the events
+            classes_df = FLASK_APP.config['classifier'].classify_events(events_df)
+
+            # Set the result
+            res_data, res_code = jsonify(classes_df.to_dict('records')), 200
+        except:
+            message = 'Failed classifying the provided events!'
+            logger.exception(message)
+            res_data, res_code = {'error': message}, 500
     else:
-        res_data, responce_code = {"error": "Request must be JSON"}, 415
+        res_data, res_code = {'error': 'Request must be JSON'}, 415
     
     return res_data, res_code
 
@@ -99,6 +116,6 @@ if __name__ == '__main__':
     
     # Run the Flask Server
     logger.info(f'Starting the Flask server')
-    app.config['classifier'] = classifier
-    app.run(host=server_name, port=server_port)
+    FLASK_APP.config['classifier'] = classifier
+    FLASK_APP.run(host=server_name, port=server_port)
 
