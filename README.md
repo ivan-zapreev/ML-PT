@@ -8,12 +8,13 @@ The main content can be reached by browsing through the following notebooks:
     - Preliminary analysis of the data columns
 * ``02_data_analysis.ipynb`` **(!)**
     - In depth investigation of the data column values
-    - PCA analysis and feature space visualization
+    - *PCA analysis and feature space visualization*
     - Extracting and dumping the features
     - ***Storing the events feature extractor*** for use in online events classification
 * ``03_tune_dbscan.ipynb`` **(!)**
-    - Using DBSCAN for feature clustering
-    - Tuning DBSCAN for optimal clustering
+    - Using DBSCAN for optimal feature clustering
+    - DBSCAN hyperparameters tuning, *finding the optimal number of clusters*
+    - *Feature space visualization with clusters*
     - ***Identifying GOOD, ATTACK and Unclassified (Noize) clusters***
 * ``04_select_classifier.ipynb``
     - Choosing a classifier for online event classification
