@@ -5,6 +5,8 @@ import regex as re
 import numpy as np
 import pandas as pd
 
+from functools import partial
+
 from src.utils.logger import logger
 
 # According to:
@@ -38,6 +40,9 @@ LEARNED_SRC_VALUES = ['REQUEST_URI', 'REQUEST_GET_ARGS', 'REQUEST_PATH', \
                       'RESPONSE_BODY', 'CLIENT_SESSION_ID', 'REQUEST_CONTENT_TYPE', \
                       'REQUEST_QUERY', 'REQUEST_FILES', 'CLIENT_IP']
 
+# The crude full IPv6 pattern
+ipv6_full_pattern = re.compile(r'^[\d\:a-fA-F]{0,39}$')
+
 def get_sec_src_value_substitute(sec_src_val, dist_src_vals=LEARNED_SRC_VALUES):
     if sec_src_val != '':
         candidates = [(Levenshtein.distance(sec_src_val, src_val), src_val) for src_val in dist_src_vals if src_val.startswith(sec_src_val)]
@@ -58,18 +63,19 @@ STRING_COLUMNS = ['CLIENT_IP', 'CLIENT_USERAGENT', 'MATCHED_VARIABLE_SRC', 'MATC
 
 # Adjust column types, convert the int columns into floats for now as there are NaN values
 # Note that the integer columns have valid value ranges, if outside the range the value is not properly set
-INT_COLUMNS = {'REQUEST_SIZE' : {'vmin':0, 'vmax':None}, 'RESPONSE_CODE' : {'vmin':100, 'vmax':599}}
+INT_COLUMNS = {'REQUEST_SIZE' : {'vmin':0, 'vmax':None, 'def_val': -1}, 'RESPONSE_CODE' : {'vmin':100, 'vmax':599, 'def_val': 418}}
 
 # Do the safe conversion to float/nan make sure the values are integers
 # Note that, both int columns are NOT controlled by the client and thus
 # if we have invalid valus in them it is safe to put them to NaN as such
 # invalid values are a likely indicator of improperly collected data
-def float_converter(val, vmin, vmax):
-    cut_limits = lambda val, vmin, vmax : np.nan if ((vmin is not None) and (val < vmin)) or ((vmax is not None) and (val > vmax)) else val
+def float_converter(val, vmin, vmax, def_val):
+    cut_limits = lambda val, vmin, vmax : def_val if ((vmin is not None) and (val < vmin)) or ((vmax is not None) and (val > vmax)) else val
     try:
-        result = np.nan if pd.isna(val) else cut_limits(int(val), vmin, vmax)
+        result = def_val if pd.isna(val) else cut_limits(int(val), vmin, vmax)
     except ValueError:
-        result = np.nan
+        result = def_val
+    
     return result
 
 def convert_ipv4_to_ipv6(address):
@@ -94,12 +100,18 @@ def check_invalid_ip_addresses(unique_client_ips):
 
     logger.info(f'Found {len(invalid_ips)} invalid IP addresses:\n{invalid_ips}')
 
-def fix_missing_ipv6_zeroes(address):
-    elements = address.split(':')
-    elements = ['0'*(4-len(elem)) + elem if len(elem) < 4 else elem for elem in elements]
+def fix_broken_ipv6_addresses(address):
+    elements = address.split(':') if ipv6_full_pattern.match(address) else []
+    
+    if len(elements) > 1:
+        elements = ['0'*(4-len(elem)) + elem if len(elem) < 4 else elem for elem in elements]
+    else:
+        elements=[]
+    
     while len(elements) < 8:
         elements.append('0000')
-    return ':'.join(elements)
+    
+    return ':'.join(elements[:8])
 
 def _replace_variable_names_val(val, match):
     if match != '':
@@ -107,7 +119,10 @@ def _replace_variable_names_val(val, match):
         val = val.replace(match, '')
     return val
 
-def clean_up_variable_names(name, src_values):
+def clean_up_variable_names(row):
+    name = row['MATCHED_VARIABLE_NAME']
+    src_values = row['MATCHED_VARIABLE_SRC']
+    
     for src_value in src_values:
         name = _replace_variable_names_val(name, src_value)
 
@@ -116,6 +131,29 @@ def clean_up_variable_names(name, src_values):
 FIX_NAME_MAPPING = {'_' : '_JQUERY_NO_CHACHE_'}
 
 def fix_variable_names(names):
-    return [FIX_NAME_MAPPING[name] if name in FIX_NAME_MAPPING else name for name in names]
+    return [FIX_NAME_MAPPING[name] if name in FIX_NAME_MAPPING else name for name in split_data_values(names)] if names != '' else []
         
-            
+def adjust_column_types(data_df):
+    logger.info(f'Handle int values columns ({INT_COLUMNS.keys()})')
+    
+    # Convert int columns to float (later to int once the NaN values are removed)
+    for col_name, val_limits in INT_COLUMNS.items():
+        logger.info(f'Converting column: "{col_name}" values to float type, with limits: {val_limits}')
+        converter = partial(float_converter, **val_limits)
+        data_df[col_name] = data_df[col_name].apply(converter)
+
+    # Convert string columns to string
+    for col_name in STRING_COLUMNS:
+        data_df[col_name] = data_df[col_name].astype('string')
+
+    # Now convert the float columns into int and drop the NaN values,
+    # it is safe since these columns data is filled by the server side
+    for col_name in INT_COLUMNS.keys():
+        data_df[col_name] = data_df[col_name].astype('int')
+        logger.info(f'Column "{col_name}" min value is: {data_df[col_name].min()}, max values is: {data_df[col_name].max()}')
+    
+    logger.info(f'Assign missing string column values to empty strings, namely for:\n{STRING_COLUMNS}')
+    # Make sure there is no NaN values in string columns, make replacements
+    data_df[STRING_COLUMNS] = data_df[STRING_COLUMNS].fillna(value='')
+    
+    return data_df
