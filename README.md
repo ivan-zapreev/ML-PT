@@ -32,7 +32,7 @@ The main content can be reached by browsing through the following notebooks:
 **NOTE 01:** The notebooks ``01`` to ``05`` above can be run sequentially, if needed to re-produce the results or re-generate the classifier and feature extractor models.
 
 **NOTE 02:** To test the service one does not have to run notebooks ``01`` to ``05`` but shall:
-1. Run the event classification restul service (see sections below)
+1. Run the event classification restful service (see sections below)
 2. Execute the ``06_run_test_client.ipynb`` notebook or use his/her own client to send requests to:
     * ``http://127.0.0.1:8080/predict``
 
@@ -55,7 +55,7 @@ The main content can be reached by browsing through the following notebooks:
    * *requirements.txt* - the python package list needed for running
    * *\*.ipynb* - multiple notebooks containing the main research work and testing
 
-# How to run the Service
+# How to run the Event Classification Service
 Requires *Python 3.8*
 
 ## Using local server
@@ -76,7 +76,39 @@ Requires *Python 3.8*
 4. Run test notebook
     * 06_run_test_client.ipynb
 
-## Re-generate requirements
+# Restful API examples
+
+# Request
+Hereby an example request sent via ``curl``:
+
+```
+ % curl -X 'POST' \
+'http://127.0.0.1:8080/predict' \
+-H 'accept: application/json' \
+-H 'Content-Type: application/json' \
+-d '[{"data": "{\"CLIENT_IP\": \"188.138.92.55\", \"CLIENT_USERAGENT\": NaN, \"REQUEST_SIZE\": 166, \"RESPONSE_CODE\": 404, \"MATCHED_VARIABLE_SRC\": \"REQUEST_URI\", \"MATCHED_VARIABLE_NAME\": NaN, \"MATCHED_VARIABLE_VALUE\": \"//tmp/20160925122692indo.php.vob\", \"EVENT_ID\": \"AVdhXFgVq1Ppo9zF5Fxu\"}"}, \
+     {"data": "{\"CLIENT_IP\": \"93.158.215.131\", \"CLIENT_USERAGENT\": \"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0\", \"REQUEST_SIZE\": 431, \"RESPONSE_CODE\": 302, \"MATCHED_VARIABLE_SRC\": \"REQUEST_GET_ARGS\", \"MATCHED_VARIABLE_NAME\": \"url\", \"MATCHED_VARIABLE_VALUE\": \"http://www.galitsios.gr/?option=com_k2%5C%5C\", \"EVENT_ID\": \"AVdcJmIIq1Ppo9zF2YIp\"}"}]'
+```
+
+# Response
+The example service response structure is:
+
+```
+[
+{
+"EVENT_ID": "AVdhXFgVq1Ppo9zF5Fxu",
+"LABEL_PRED": 42
+},
+{
+"EVENT_ID": "AVdcJmIIq1Ppo9zF2YIp",
+"LABEL_PRED": 3
+}
+]
+```
+
+# Utility information
+
+## Re-generate requirements file
 ``ML-PT % pipreqs . --force``
 
 ## Re-generate docker image
