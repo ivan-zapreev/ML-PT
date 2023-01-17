@@ -52,7 +52,7 @@ The core of the task is devising unsupervised feature detection method for netwo
             * **classifier/** - files related to selecting and training/tuning the classifier
         * **service/** - Flask-based event classification service
         * **utils/** - various utility source files
-   * *READRE.md* - this read-me file
+   * *README.md* - this read-me file
    * *LICENSE* - licensing information file
    * *Dockerfile* - docker image building file
    * *requirements.txt* - the python package list needed for running
