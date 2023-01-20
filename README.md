@@ -122,3 +122,5 @@ The example service response structure is:
 
 # TODOs
 1. Event though we get at most 2.8% of noize when running DBSCAN, one can try to reduce the noize levels by reducing *min_samples*
+2. It would make sence to change the encoding of ``MATCHED_VARIABLE_NAME`` and ``MATCHED_VARIABLE_VALUE`` column values
+    * It is currently done using TFIDF vectorizer but it is not very suitable for encoding URLs, URL parameters and alike
